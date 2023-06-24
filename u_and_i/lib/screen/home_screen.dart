@@ -1,7 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/cupertino.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State createState() => _HomeScreen();
+}
+
+class _HomeScreen extends State<HomeScreen> {
+
+  DateTime firstDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +26,10 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _DDay(),
+            _DDay(
+              onHeartPressed: onHeartPressed,
+              firstDay: firstDay,
+            ),
             _CoupleImage(),
           ],
         ),
@@ -24,13 +37,60 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void onHeartPressed() {
+    print("클릭");
+    // setState(() {
+    //   firstDay = firstDay.subtract(Duration(days: 1));
+    // });
+    showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+
+          final initDate = DateTime.now();
+
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.white,
+              height: 300,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                minimumYear: 1900,
+                maximumYear: DateTime.now().year,
+                initialDateTime: initDate,
+                maximumDate: DateTime.now(),
+                onDateTimeChanged: (DateTime date) {
+
+                  setState(() {
+                    firstDay = date;
+                  });
+
+                },
+              ),
+            ),
+          );
+        },
+        barrierDismissible: true,
+    );
+  }
+
 }
 
 class _DDay extends StatelessWidget {
+
+  final GestureTapCallback onHeartPressed;
+  final DateTime firstDay;
+
+  _DDay({
+    required this.onHeartPressed,
+    required this.firstDay,
+  });
+
   @override
   Widget build(BuildContext context) {
 
     final textTheme = Theme.of(context).textTheme;
+    final now = DateTime.now();
 
     return Column(
       children: [
@@ -49,7 +109,7 @@ class _DDay extends StatelessWidget {
           style: textTheme.bodyLarge,
         ),
         Text(
-          '2021.11.23',
+          '${firstDay.year}.${firstDay.month}.${firstDay.day}',
           style: textTheme.bodyMedium,
         ),
         const SizedBox(
@@ -57,7 +117,7 @@ class _DDay extends StatelessWidget {
         ),
         IconButton(
           iconSize: 60.0,
-          onPressed: () {},
+          onPressed: onHeartPressed,
           icon: Icon(
             Icons.favorite,
             color: Colors.red,
@@ -67,7 +127,7 @@ class _DDay extends StatelessWidget {
           height: 16.0,
         ),
         Text(
-          'D+365',
+          'D+${DateTime(now.year, now.month, now.day).difference(firstDay).inDays + 1}',
           style: textTheme.displayMedium,
         ),
       ],
