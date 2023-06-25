@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:random_dice/screen/home_screen.dart';
 import 'package:random_dice/screen/setting_screen.dart';
+import 'package:shake/shake.dart';
 
 class RootScreen extends StatefulWidget {
 
@@ -15,6 +18,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   TabController? controller;
   double threshold = 2.7;
+  int number = 1;
+  ShakeDetector? shakeDetector;
 
   @override
   void initState() {
@@ -23,6 +28,19 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     //컨트롤러 초기화
     controller = TabController(length: 2, vsync: this);
     controller!.addListener(tabListener);
+
+    shakeDetector = ShakeDetector.autoStart(
+        shakeSlopTimeMS: 100,
+        shakeThresholdGravity: threshold,
+        onPhoneShake: onPhoneShake,
+    );
+  }
+
+  void onPhoneShake() {
+    final rand = Random();
+    setState(() {
+      number = rand.nextInt(5) +1;
+    });
   }
 
   tabListener()  {
@@ -34,6 +52,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     controller!.removeListener(tabListener);
+    shakeDetector!.stopListening();  //흔들기 감지 중지
     super.dispose();
   }
 
@@ -41,7 +60,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     return [
       
       HomeScreen(
-        number: 1,
+        number: number,
       ),
       SettingsScreen(
           threshold: threshold,
