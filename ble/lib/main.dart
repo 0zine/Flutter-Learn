@@ -35,16 +35,52 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  List<ScanResult> scanResults = [];
+  List<BluetoothService> services = [];
+
+  BluetoothDevice? selectedDevice;
+  ConnectionState connectionState = ConnectionState.disconnected;
+
+  String receivedData = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _initBLE();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
+    _disconnectFromDevice();
     super.dispose();
+  }
+
+  // 초기화
+  void _initBLE() async {
+    print("_initBLE");
+  }
+
+  // 스캔
+  void _startScan() async {
+    print("_startScan");
+  }
+
+  // 기기 연결
+  void _connectToDevice() async {
+    print("_connectToDevice");
+  }
+
+  // 연결 해제
+  void _disconnectFromDevice() async {
+    print("_disconnectFromDevice");
+  }
+
+  // 서비스 검색
+  void _discoverServices() async {
+    print("_discoverServices");
   }
 
   @override
@@ -54,20 +90,26 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         centerTitle: true,
-        actions: [IconButton(onPressed: () => {}, icon: Icon(Icons.refresh))],
+        actions: [
+          IconButton(
+            onPressed: connectionState == ConnectionState.scanning ? () => FlutterBluePlus.stopScan() : () => _startScan,
+            icon: Icon(connectionState == ConnectionState.scanning ? Icons.stop : Icons.refresh),
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'BLE Study',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
+      body: connectionState == ConnectionState.connected ? _buildConnectedDeviceView() : _buildScanResultsList(),
     );
   }
+}
+
+// 스캔 결과 목록
+Widget _buildScanResultsList() {
+  print("_buildScanResultsList");
+  return Placeholder();
+}
+
+// 연결된 기기 화면
+Widget _buildConnectedDeviceView() {
+  print("_buildConnectedDeviceView");
+  return Placeholder();
 }
